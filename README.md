@@ -205,5 +205,4 @@ These are planned improvements. The repository records the completed deployment 
 ---
 
 **Hameez Ahmad** · [GitHub](https://github.com/hameezG) · [AITS application case study](https://github.com/hameezG/AITS-case-study/)
-"# aits-oci-deployment" 
-"# aits-oci-deployment" 
+
