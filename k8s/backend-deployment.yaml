@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: ap-singapore-1.ocir.io/YOUR_OCIR_NAMESPACE/aits/backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+
+        envFrom:
+        - secretRef:
+            name: app-secrets
+
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 8000
+          initialDelaySeconds: 40
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 8000
+          initialDelaySeconds: 20
+          periodSeconds: 5
+
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+      imagePullSecrets:
+      - name: ocir-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  annotations:
+    oci.oraclecloud.com/load-balancer-type: "lb"
+    service.beta.kubernetes.io/oci-load-balancer-shape: "flexible"
+    service.beta.kubernetes.io/oci-load-balancer-shape-flex-min: "10"
+    service.beta.kubernetes.io/oci-load-balancer-shape-flex-max: "10"
+
+spec:
+  selector:
+    app: backend
+
+  ports:
+  - port: 8000
+    targetPort: 8000
+
+  type: LoadBalancer

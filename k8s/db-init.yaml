@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db-init
+spec:
+  restartPolicy: Never
+
+  containers:
+  - name: db-init
+    image: ap-singapore-1.ocir.io/YOUR_OCIR_NAMESPACE/aits/backend:latest
+    imagePullPolicy: Always
+
+    envFrom:
+    - secretRef:
+        name: app-secrets
+
+    command:
+    - python
+    - -c
+    - |
+      import os
+      from sqlalchemy.engine import make_url
+      import pymysql
+
+      url = make_url(os.environ["DATABASE_URL"])
+
+      conn = pymysql.connect(
+          host=url.host,
+          port=url.port or 3306,
+          user=url.username,
+          password=url.password
+      )
+
+      with conn.cursor() as cursor:
+          cursor.execute(
+              "CREATE DATABASE IF NOT EXISTS genius_hub "
+              "CHARACTER SET utf8mb4 "
+              "COLLATE utf8mb4_unicode_ci"
+          )
+
+      conn.commit()
+      conn.close()
+
+      print("genius_hub database created successfully")
+
+  imagePullSecrets:
+  - name: ocir-secret
