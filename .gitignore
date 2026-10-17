@@ -1,0 +1,16 @@
+# Local credentials and configuration
+.env
+.env.*
+!.env.example
+config/app-secrets.yaml
+**/secrets.yaml
+*.pem
+*.key
+kubeconfig*
+.oci/
+# Generated output
+node_modules/
+.next/
+__pycache__/
+*.log
+.DS_Store
