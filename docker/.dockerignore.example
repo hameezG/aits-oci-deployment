@@ -1,0 +1,10 @@
+# Copy to each application build context as .dockerignore.
+.git
+.env
+.env.*
+node_modules
+.next
+__pycache__
+*.pyc
+*.pem
+*.key
